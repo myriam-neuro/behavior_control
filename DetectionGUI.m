@@ -22,7 +22,7 @@ function varargout = DetectionGUI(varargin)
 
 % Edit the above text to modify the response to help DetectionGUI
 
-% Last Modified by GUIDE v2.5 10-Jul-2024 12:44:49
+% Last Modified by GUIDE v2.5 11-Aug-2025 17:23:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,7 +84,7 @@ set(handles.SetDateTag,'Enable','off');
 
 % [TO CUSTOMIZE BY EACH USER]
 set(handles.MouseNameTag,'String','ABXXX'); handles.mouse_name = get(handles.MouseNameTag,'String');
-handles.behaviour_directory = 'C:\Users\bisi\Desktop\BehaviourData';
+handles.behaviour_directory = 'C:\Users\mhamon\Desktop\BehaviourData';
 set(handles.BehaviorDirectoryTag,'String', handles.behaviour_directory);
 
 %% Set general session settings
@@ -197,9 +197,15 @@ set(handles.ContextTablePath,'Enable','off');
 set(handles.ValveOpeningTag,'String','40'); handles.reward_valve_duration = str2double(get(handles.ValveOpeningTag,'String'));
 set(handles.ValveOpeningTag, 'Enable', 'on');
 set(handles.RewardDelayCheckbox,'Value',0); handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
-set(handles.RewardDelayCheckbox,'Enable','off');
-set(handles.RewardDelayTag,'String','0'); handles.reward_delay_time = str2double(get(handles.RewardDelayTag,'String'));
-set(handles.RewardDelayTag,'Enable','off');
+set(handles.RewardDelayCheckbox,'Enable','on');
+set(handles.MinRewardDelayTag,'String','0'); handles.min_reward_delay_time = str2double(get(handles.MinRewardDelayTag,'String'));
+set(handles.MinRewardDelayTag,'Enable','off');
+set(handles.MaxRewardDelayTag,'String','0'); handles.max_reward_delay_time = str2double(get(handles.MaxRewardDelayTag,'String'));
+set(handles.MaxRewardDelayTag,'Enable','off');
+set(handles.Distribution,'Value',0); handles.normal_distribution_flag = get(handles.Distribution,'Value');
+set(handles.Distribution,'Enable','on');
+set(handles.Dist_sigma,'String','0'); handles.normal_distribution_sigma = str2double(get(handles.Dist_sigma,'String'));
+set(handles.Dist_sigma,'Enable','off');
 set(handles.PartialRewardCheckbox,'Value',0); handles.partial_reward_flag = get(handles.PartialRewardCheckbox,'Value');
 set(handles.PartialRewardCheckbox,'Enable','on');
 set(handles.RewardProbTag,'String','1'); handles.reward_proba = str2double(get(handles.RewardProbTag,'String'));
@@ -208,6 +214,8 @@ set(handles.AudRewTag,'Value',1); handles.aud_reward = get(handles.AudRewTag,'Va
 set(handles.AudRewTag,'Enable','off');
 set(handles.WhRewTag,'Value',1); handles.wh_reward = get(handles.WhRewTag,'Value');
 set(handles.WhRewTag,'Enable','on');
+set(handles.NStimRew,'Value',0); handles.nstim_reward = get(handles.NStimRew,'Value');
+set(handles.NStimRew,'Enable','on');
 set(handles.LickThresholdTag,'String','0.03'); handles.lick_threshold = str2double(get(handles.LickThresholdTag,'String'));
 
 %% Behaviour camera settings
@@ -1222,17 +1230,17 @@ end
 
 
 
-function RewardDelayTag_Callback(hObject, eventdata, handles)
-% hObject    handle to RewardDelayTag (see GCBO)
+function MinRewardDelayTag_Callback(hObject, eventdata, handles)
+% hObject    handle to MinRewardDelayTag (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of RewardDelayTag as text
-%        str2double(get(hObject,'String')) returns contents of RewardDelayTag as a double
+% Hints: get(hObject,'String') returns contents of MinRewardDelayTag as text
+%        str2double(get(hObject,'String')) returns contents of MinRewardDelayTag as a double
 global handles2give
 
-handles.reward_delay_time = round(str2double(get(handles.RewardDelayTag,'String')));
-set(handles.RewardDelayTag,'String',num2str(handles.reward_delay_time));
+handles.min_reward_delay_time = round(str2double(get(handles.MinRewardDelayTag,'String')));
+set(handles.MinRewardDelayTag,'String',num2str(handles.min_reward_delay_time));
 
 % Update handles structure
 handles2give= handles;
@@ -1240,8 +1248,8 @@ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function RewardDelayTag_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to RewardDelayTag (see GCBO)
+function MinRewardDelayTag_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MinRewardDelayTag (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1263,9 +1271,12 @@ global handles2give
 
 handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
 if handles.reward_delay_flag
-    set(handles.RewardDelayTag,'Enable','on');
+    set(handles.MinRewardDelayTag,'Enable','on');
+    set(handles.MaxRewardDelayTag,'Enable','on');
+
 else
-    set(handles.RewardTag,'Enable','off');
+    set(handles.MinRewardDelayTag,'Enable','off');
+    set(handles.MaxRewardDelayTag,'Enable','off');
 end
 
 % Update handles structure
@@ -2720,3 +2731,96 @@ end
 % Update handles structure
 handles2give= handles;
 guidata(hObject, handles);
+
+
+
+function MaxRewardDelayTag_Callback(hObject, eventdata, handles)
+% hObject    handle to MaxRewardDelayTag (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of MaxRewardDelayTag as text
+%        str2double(get(hObject,'String')) returns contents of MaxRewardDelayTag as a double
+global handles2give
+
+handles.max_reward_delay_time = round(str2double(get(handles.MaxRewardDelayTag,'String')));
+set(handles.MaxRewardDelayTag,'String',num2str(handles.max_reward_delay_time));
+
+% Update handles structure
+handles2give= handles;
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function MaxRewardDelayTag_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MaxRewardDelayTag (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in NStimRew.
+function NStimRew_Callback(hObject, eventdata, handles)
+% hObject    handle to NStimRew (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global handles2give
+handles.nstim_reward = get(handles.NStimRew,'Value');
+handles2give=handles;
+guidata(hObject, handles)
+% Hint: get(hObject,'Value') returns toggle state of NStimRew
+
+
+% --- Executes on button press in Distribution.
+function Distribution_Callback(hObject, eventdata, handles)
+% hObject    handle to Distribution (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of Distribution
+global handles2give
+
+handles.normal_distribution_flag = get(handles.Distribution,'Value');
+if handles.normal_distribution_flag
+    set(handles.Dist_sigma,'Enable','on');
+else
+    set(handles.Dist_sigma,'Enable','off');
+end
+% Update handles structure
+handles2give= handles;
+guidata(hObject, handles);
+
+
+
+function Dist_sigma_Callback(hObject, eventdata, handles)
+% hObject    handle to Dist_sigma (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Dist_sigma as text
+%        str2double(get(hObject,'String')) returns contents of Dist_sigma as a double
+global handles2give
+
+handles.normal_distribution_sigma = round(str2double(get(handles.Dist_sigma,'String')));
+set(handles.Dist_sigma,'String',num2str(handles.normal_distribution_sigma));
+
+% Update handles structure
+handles2give= handles;
+guidata(hObject, handles);
+
+% --- Executes during object creation, after setting all properties.
+function Dist_sigma_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Dist_sigma (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

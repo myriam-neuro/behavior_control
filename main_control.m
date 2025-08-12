@@ -11,10 +11,10 @@ function main_control(~,event)
         Reward_S  Trigger_S fid_lick_trace mouse_licked_flag reaction_time ...
         trial_started_flag  trial_number folder_name handles2give...
         baseline_window camera_vec...
-        deliver_reward_flag ...
+        deliver_reward_flag reward_time ...
         wh_stim_amp response_window response_window_start response_window_end...
         perf_and_save_results_flag reward_delivered_flag update_parameters_flag...
-        is_reward...
+        is_reward reward_delay_flag reward_delay_time...
         light_prestim_delay light_duration light_freq light_amp SITrigger_vec...
         context_flag extra_time...
         pink_noise_player brown_noise_player context_block WF_S Opto_S ...
@@ -40,7 +40,6 @@ function main_control(~,event)
     % Trial start: 1. if stim flag ON, 2. no lick in quiet window 3. iti
     % has elapsed since trial_end_time
     if stim_flag && toc(trial_end_time) > iti/ 1000 + extra_time && toc(lick_time) > quiet_window/1000
-    
         % Reset the stimulation flag
         stim_flag = 0;
     
@@ -56,7 +55,7 @@ function main_control(~,event)
         outputSingleScan(Trigger_S, [1 0 0]);
     
         % Check if a free reward should be delivered
-        if association_flag && ~passive_stim_flag && is_stim
+        if association_flag && ~passive_stim_flag 
             deliver_reward_flag = 1;
         end
     
@@ -76,8 +75,8 @@ function main_control(~,event)
     % sum(abs(event.Data(1:end-1,1))<lick_threshold & abs(event.Data(2:end,1))>lick_threshold) &&... %check if lick
     if trial_started_flag && ~association_flag  &&... %check if currently within a trial
         toc(trial_start_time)>response_window_start && toc(trial_start_time)<response_window_end &&... %check if in response window
-        sum(abs(event.Data(1:end,1)) > lick_threshold) >= 3 &&...
-        ~sum(abs(event.Data(1:end-1,1))<10000*lick_threshold & abs(event.Data(2:end,1))>10000*lick_threshold) % <- WHY THIS?
+        sum(abs(event.Data(1:end,1)) > lick_threshold) >= 3
+        %~sum(abs(event.Data(1:end-1,1))<10000*lick_threshold & abs(event.Data(2:end,1))>10000*lick_threshold) % <- WHY THIS?
 
         trial_started_flag=0;
         
@@ -140,6 +139,14 @@ function main_control(~,event)
                 reaction_time=hit_time_adjusted-(baseline_window)/1000;
                 mouse_licked_flag=1;
                 perf_and_save_results_flag=1;
+            else 
+                hit_time=toc(trial_start_time);
+                % first_threshold_cross=find(abs(event.Data(1:end-1,1))<lick_threshold & abs(event.Data(2:end,1))>lick_threshold',1,'first');
+                first_threshold_cross=find(abs(event.Data(2:end,1))>lick_threshold',1,'first'); 
+                hit_time_adjusted=hit_time-first_threshold_cross/Main_S_SR;
+                reaction_time=hit_time_adjusted-(baseline_window)/1000;
+                mouse_licked_flag=1;
+                perf_and_save_results_flag=1;
             end
         end
     end
@@ -164,7 +171,7 @@ function main_control(~,event)
         early_lick=0;
         
         %Association trials
-        if association_flag
+        if association_flag  && ~reward_delay_flag
             set(handles2give.OnlineTextTag,'String','Trial Finished','FontWeight','bold');
             lick_flag=0;
             perf=6; 
@@ -217,7 +224,7 @@ function main_control(~,event)
             wh_stim_duration wh_stim_amp wh_scaling_factor wh_reward is_reward ...
             aud_stim_duration aud_stim_amp aud_stim_freq aud_reward early_lick ...
             is_light light_amp light_duration light_freq light_prestim_delay ...
-            context_block};
+            context_block reward_time};
 
         variable_saving_names = {'trial_number', 'perf', 'trial_time', 'association_flag', 'quiet_window','iti', ...
             'response_window', 'artifact_window','baseline_window','trial_duration', ...
@@ -226,7 +233,7 @@ function main_control(~,event)
             'is_reward', ...
             'aud_stim_duration','aud_stim_amp','aud_stim_freq','aud_reward', ...
             'early_lick', ...
-            'is_light', 'light_amp','light_duration','light_freq','light_prestim', 'context_block'};
+            'is_light', 'light_amp','light_duration','light_freq','light_prestim', 'context_block', 'reward_time'};
 
         % Update csv result file
         update_and_save_results_csv(variables_to_save, variable_saving_names);
@@ -385,10 +392,8 @@ function main_control(~,event)
             toc(trial_start_time)>(light_prestim_delay +baseline_window)/1000
 
         deliver_reward_flag=0;
-        outputSingleScan(Trigger_S,[0 1 0])
-        reward_delivered_flag=1;
-        outputSingleScan(Trigger_S,[0 0 0]);
-
+        reward_delivery
+        reward_time = reward_delay_time;
         %Reset
         trial_started_flag=0;
         perf_and_save_results_flag=1;

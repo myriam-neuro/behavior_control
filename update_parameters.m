@@ -3,7 +3,7 @@ function update_parameters
 
     global   association_flag response_window trial_duration quiet_window lick_threshold...
         artifact_window iti camera_flag is_stim is_auditory is_whisker is_light is_opto...
-        reward_valve_duration  aud_reward wh_reward wh_vec aud_vec light_vec ...
+        reward_valve_duration  aud_reward wh_reward nstim_reward wh_vec aud_vec light_vec ...
         light_prestim_delay stim_flag perf lick_flag ...
         false_alarm_punish_flag false_alarm_timeout early_lick_punish_flag early_lick_timeout ...
         Stim_S Log_S wh_stim_duration  aud_stim_duration  aud_stim_amp  aud_stim_freq  Stim_S_SR ScansTobeAcquired ...
@@ -13,7 +13,7 @@ function update_parameters
         light_flag baseline_window camera_vec deliver_reward_flag ...
         wh_stim_amp wh_scaling_factor response_window_start response_window_end...
         perf_and_save_results_flag reward_delivered_flag update_parameters_flag...
-        is_reward reward_pool partial_reward_flag reward_proba_old...
+        is_reward reward_pool_whisker reward_pool_nostim partial_reward_flag reward_proba_old reward_delay_flag reward_delay_time...
         light_duration light_freq light_amp light_duty camera_freq SITrigger_vec main_trial_pool...
         whisker_trial_counter mouse_rewarded_context context_block context_flag block_id wh_rewarded_context...
         pink_noise_player brown_noise_player identical_block_count extra_time Context_S...
@@ -91,7 +91,7 @@ function update_parameters
     wh_scaling_factor = handles2give.wh_scaling_factor;
 
     aud_stim_weight = handles2give.aud_stim_weight;
-    wh_stim_weight = get_whisker_weight(handles2give);
+    wh_stim_weight = handles2give.wh_stim_weight_1;
     no_stim_weight = handles2give.no_stim_weight;
     
     if light_flag % If light stimulus, to be implemented
@@ -410,15 +410,10 @@ function update_parameters
 
     %% Reward Settings
     reward_valve_duration=handles2give.reward_valve_duration;    % duration valve open in milliseconds
-
-    if handles2give.reward_delay_flag
-        reward_delay_time=handles2give.reward_delay_time;         % delay in milisecond for delivering reward after stim (if Association=1)
-    else
-        reward_delay_time = 0;
-    end
-
     
     aud_reward = handles2give.aud_reward; % is auditory rewarded
+    nstim_reward = handles2give.nstim_reward; % is auditory rewarded
+
     if context_flag
         if wh_rewarded_context
             wh_reward=1;
@@ -430,42 +425,75 @@ function update_parameters
     end
 
     partial_reward_flag=handles2give.partial_reward_flag; 
-    n_pool_partial = 10; 
-
+    n_pool_partial = 10; % size of reward/no-reward block
+    reward_proba_whisker = handles2give.reward_proba; % e.g. 0.8
+    reward_proba_no_stim = 1 - reward_proba_whisker;
+    
     % PROBABILISTIC reward delivery for whisker
-    if partial_reward_flag && not(association_flag)
-
-        reward_proba=handles2give.reward_proba; % proportion of rewarded whisker hits
-        if isempty('reward_proba_old')
-            reward_proba_old = reward_proba;
+    if partial_reward_flag && ~association_flag
+    
+        % === Rebuild pools at block boundaries or when probability changes ===
+        if whisker_trial_counter == 1 || reward_proba_old ~= reward_proba_whisker
+            reward_proba_old = reward_proba_whisker;
+        
+            % Whisker reward pool
+            reward_pool_whisker = [ ...
+                ones(1, round(reward_proba_whisker * n_pool_partial)), ...
+                zeros(1, round((1 - reward_proba_whisker) * n_pool_partial)) ...
+            ];
+            reward_pool_whisker = reward_pool_whisker(randperm(numel(reward_pool_whisker)));
+        
+            % No-stim reward pool
+            reward_pool_nostim = [ ...
+                ones(1, round(reward_proba_no_stim * n_pool_partial)), ...
+                zeros(1, round((1 - reward_proba_no_stim) * n_pool_partial)) ...
+            ];
+            reward_pool_nostim = reward_pool_nostim(randperm(numel(reward_pool_nostim)));
         end
-
-        % Update pool of rewarded and unrewarded trials (1s and 0s) -> this
-        % could be deleted
-        if all(mod(whisker_trial_counter, n_pool_partial)==1)|| all(reward_proba_old ~= reward_proba)  %check if reward_proba has changed
-            reward_proba_old = reward_proba;
-            reward_pool=[zeros(1,round((1-reward_proba)*n_pool_partial)) ones(1,round(reward_proba*n_pool_partial))]; % zero for no stim, one for Reward
-            reward_pool=reward_pool(randperm(numel(reward_pool))); 
-        end
-
-        % Set reward flag per trial type
-        if is_whisker 
-            is_reward = double(rand(1)<reward_proba);
+        
+        % === Select reward for this trial ===
+        pool_idx = mod(whisker_trial_counter - 1, n_pool_partial) + 1;
+        if is_whisker
+            is_reward = reward_pool_whisker(pool_idx);
+        elseif ~is_whisker &&  ~is_auditory
+            is_reward = reward_pool_nostim(pool_idx);
         elseif is_auditory
-            is_reward=aud_reward;
-        end 
-
+            is_reward = aud_reward;
+        else
+            is_reward = 0;
+        end
+              
+    elseif  ~nstim_reward && not(partial_reward_flag)
+        is_reward=0;
     % CONSTANT reward delivery (also for association trials)
     elseif not(partial_reward_flag) || association_flag
         is_reward=1;
+
     end
 
-    
     % Define reward vector
     rew_vec_amp = 5; %volt
-    reward_vec = [zeros(1,reward_delay_time) rew_vec_amp*ones(1,reward_valve_duration*Reward_S_SR/1000) zeros(1,Reward_S_SR/2)];
+    reward_delay_flag =  handles2give.reward_delay_flag ;
+    if reward_delay_flag
+            minDelay=handles2give.min_reward_delay_time; 
+            maxDelay=handles2give.max_reward_delay_time; 
+       if handles2give.normal_distribution_flag
+            mu = 500;
+            sigma =  handles2give.normal_distribution_sigma;
+            pd = makedist('Normal', 'mu', mu, 'sigma', sigma);
+            t_pd = truncate(pd, minDelay, maxDelay);
+            reward_delay_time = floor(random(t_pd));
+       else
+            reward_delay_time = floor(minDelay + (maxDelay - minDelay)*rand);
 
-    if ~is_reward || ~is_stim
+       end
+
+    else
+        reward_delay_time = 0;
+    end
+    reward_vec = [zeros(1,reward_delay_time) rew_vec_amp*ones(1,reward_valve_duration*Reward_S_SR/1000) zeros(1,Reward_S_SR/2)];
+    disp(is_reward)
+    if ~is_reward 
         reward_vec=zeros(1,numel(reward_vec));
     end
 
@@ -676,7 +704,6 @@ function update_parameters
             opto_titles={'', ''};
     end
 
-
     if is_stim
 
         if is_auditory
@@ -703,8 +730,14 @@ function update_parameters
         end
 
     else
+        if is_reward==1 
+                reward_title = 'Rewarded';
+        else
+                reward_title = 'Not rewarded';
+        end
+
         set(handles2give.TrialTimeLineTextTag,'String',['Next trial:   ' char(trial_titles(is_stim+1)) ' '...
-            char(association_titles(association_flag+1))  '     ' char(opto_titles(is_opto+1))], 'ForegroundColor','k');
+            char(association_titles(association_flag+1))  '     ' char(reward_title) '     ' char(opto_titles(is_opto+1))], 'ForegroundColor','k');
     end
 
     %% Parameters are updated: now send signal vectors and triggers
