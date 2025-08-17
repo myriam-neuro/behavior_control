@@ -400,7 +400,7 @@ function main_control(~,event)
 
     elseif trial_started_flag && association_flag && ~deliver_reward_flag &&...
             toc(trial_start_time)>(light_prestim_delay + baseline_window)/1000
-
+        reward_time = reward_delay_time;
         trial_started_flag=0;
         perf_and_save_results_flag=1;
     end
