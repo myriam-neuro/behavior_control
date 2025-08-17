@@ -22,7 +22,7 @@ function varargout = DetectionGUI(varargin)
 
 % Edit the above text to modify the response to help DetectionGUI
 
-% Last Modified by GUIDE v2.5 10-Jul-2024 12:44:49
+% Last Modified by GUIDE v2.5 17-Aug-2025 09:49:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,7 +84,7 @@ set(handles.SetDateTag,'Enable','off');
 
 % [TO CUSTOMIZE BY EACH USER]
 set(handles.MouseNameTag,'String','ABXXX'); handles.mouse_name = get(handles.MouseNameTag,'String');
-handles.behaviour_directory = 'C:\Users\bisi\Desktop\BehaviourData';
+handles.behaviour_directory = 'C:\Users\mhamon\Desktop\BehaviourData';
 set(handles.BehaviorDirectoryTag,'String', handles.behaviour_directory);
 
 %% Set general session settings
@@ -197,7 +197,7 @@ set(handles.ContextTablePath,'Enable','off');
 set(handles.ValveOpeningTag,'String','40'); handles.reward_valve_duration = str2double(get(handles.ValveOpeningTag,'String'));
 set(handles.ValveOpeningTag, 'Enable', 'on');
 set(handles.RewardDelayCheckbox,'Value',0); handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
-set(handles.RewardDelayCheckbox,'Enable','off');
+set(handles.RewardDelayCheckbox,'Enable','on');
 set(handles.RewardDelayTag,'String','0'); handles.reward_delay_time = str2double(get(handles.RewardDelayTag,'String'));
 set(handles.RewardDelayTag,'Enable','off');
 set(handles.PartialRewardCheckbox,'Value',0); handles.partial_reward_flag = get(handles.PartialRewardCheckbox,'Value');
@@ -208,6 +208,8 @@ set(handles.AudRewTag,'Value',1); handles.aud_reward = get(handles.AudRewTag,'Va
 set(handles.AudRewTag,'Enable','off');
 set(handles.WhRewTag,'Value',1); handles.wh_reward = get(handles.WhRewTag,'Value');
 set(handles.WhRewTag,'Enable','on');
+set(handles.NoStimRewTag,'Value',1); handles.no_stim_reward_flag = get(handles.NoStimRewTag,'Value');
+set(handles.NoStimRewTag,'Enable','on');
 set(handles.LickThresholdTag,'String','0.03'); handles.lick_threshold = str2double(get(handles.LickThresholdTag,'String'));
 
 %% Behaviour camera settings
@@ -2720,3 +2722,20 @@ end
 % Update handles structure
 handles2give= handles;
 guidata(hObject, handles);
+
+
+
+% --- Executes on button press in NoStimRewTag.
+function NoStimRewTag_Callback(hObject, eventdata, handles)
+% hObject    handle to NoStimRewTag (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% Hint: get(hObject,'Value') returns toggle state of WhRewTag
+global handles2give
+handles.no_stim_reward_flag = get(handles.NoStimRewTag,'Value');
+handles2give=handles;
+guidata(hObject, handles)
+
+% Hint: get(hObject,'Value') returns toggle state of NoStim_rh_flag
+
+% Hint: get(hObject,'Value') returns toggle state of NoStimRewTag

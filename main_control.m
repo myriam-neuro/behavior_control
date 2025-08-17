@@ -11,7 +11,7 @@ function main_control(~,event)
         Reward_S  Trigger_S fid_lick_trace mouse_licked_flag reaction_time ...
         trial_started_flag  trial_number folder_name handles2give...
         baseline_window camera_vec...
-        deliver_reward_flag ...
+        deliver_reward_flag no_stim_reward_flag...
         wh_stim_amp response_window response_window_start response_window_end...
         perf_and_save_results_flag reward_delivered_flag update_parameters_flag...
         is_reward...
@@ -56,8 +56,15 @@ function main_control(~,event)
         outputSingleScan(Trigger_S, [1 0 0]);
     
         % Check if a free reward should be delivered
-        if association_flag && ~passive_stim_flag && is_stim
-            deliver_reward_flag = 1;
+        if association_flag && ~passive_stim_flag 
+            if is_whisker && wh_reward
+                deliver_reward_flag = 1;
+            elseif ~is_whisker && no_stim_reward_flag
+                deliver_reward_flag = 1;
+            else
+                deliver_reward_flag = 0;
+
+            end
         end
     
         % Set flags for trial status

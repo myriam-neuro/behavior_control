@@ -13,7 +13,7 @@ function update_parameters
         light_flag baseline_window camera_vec deliver_reward_flag ...
         wh_stim_amp wh_scaling_factor response_window_start response_window_end...
         perf_and_save_results_flag reward_delivered_flag update_parameters_flag...
-        is_reward reward_pool partial_reward_flag reward_proba_old...
+        is_reward reward_pool partial_reward_flag reward_proba_old no_stim_reward_flag...
         light_duration light_freq light_amp light_duty camera_freq SITrigger_vec main_trial_pool...
         whisker_trial_counter mouse_rewarded_context context_block context_flag block_id wh_rewarded_context...
         pink_noise_player brown_noise_player identical_block_count extra_time Context_S...
@@ -30,6 +30,8 @@ function update_parameters
    %% GENERAL SETTINGS FROM BEHAVIOUR GUI
 
     association_flag=handles2give.association_flag; % 0 detection 1 assosiation
+    no_stim_reward_flag=handles2give.no_stim_reward_flag; % 0 detection 1 assosiation
+
     light_flag=handles2give.light_flag;
     
     % Context info flag
@@ -465,7 +467,7 @@ function update_parameters
     rew_vec_amp = 5; %volt
     reward_vec = [zeros(1,reward_delay_time) rew_vec_amp*ones(1,reward_valve_duration*Reward_S_SR/1000) zeros(1,Reward_S_SR/2)];
 
-    if ~is_reward || ~is_stim
+    if ~is_reward 
         reward_vec=zeros(1,numel(reward_vec));
     end
 

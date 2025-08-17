@@ -9,7 +9,7 @@ addAnalogOutputChannel(session,'Dev2','ao0', 'Voltage');
 % channel_coil = addAnalogOutputChannel(session,'PXI1Slot2','ao0', 'Voltage');
 
 % Read teslameter or displacement sensor output.
-addAnalogInputChannel(session,'Dev2','ai6', 'Voltage');
+addAnalogInputChannel(session,'Dev2','ai1', 'Voltage');
 
 sr = session_sampling_rate/1000;  % Sampling rate in ms.
 baseline_dur = 2000;
@@ -18,7 +18,7 @@ trial_dur = 4000;
 
 %% Specify saving information and create folder
 
-dest_path = 'C:\Users\bechvila\Desktop\Behaviour_repo\calibration';
+dest_path = 'C:\Users\mhamon\Desktop\Behaviour_repo\calibration';
 mouse_name = 'PB181';
 date = datetime('today', 'Format', 'yyyyMMdd');
 
@@ -97,7 +97,7 @@ elseif strcmp(stim_name,'biphasic_hann_3ms')
 
     % Biphasic Hann (raised cosine) window 3 ms.
     
-    stim_amp_volt = 2.9;
+    stim_amp_volt = 4.7;
     stim_duration_up = 1.5;
     stim_duration_down = 1.5;
     scale_factor = 0.9;
