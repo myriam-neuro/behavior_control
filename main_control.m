@@ -59,10 +59,15 @@ function main_control(~,event)
         if association_flag && ~passive_stim_flag 
             if is_whisker && wh_reward
                 deliver_reward_flag = 1;
+                is_reward = 1;
             elseif ~is_whisker && no_stim_reward_flag
                 deliver_reward_flag = 1;
+                is_reward = 1;
+
             else
                 deliver_reward_flag = 0;
+                is_reward = 1;
+
 
             end
         end
