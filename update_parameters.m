@@ -13,7 +13,7 @@ function update_parameters
         light_flag baseline_window camera_vec deliver_reward_flag ...
         wh_stim_amp wh_scaling_factor response_window_start response_window_end...
         perf_and_save_results_flag reward_delivered_flag update_parameters_flag...
-        is_reward reward_pool partial_reward_flag reward_proba_old no_stim_reward_flag...
+        is_reward reward_pool partial_reward_flag reward_proba_old no_stim_reward_flag reward_delay_time...
         light_duration light_freq light_amp light_duty camera_freq SITrigger_vec main_trial_pool...
         whisker_trial_counter mouse_rewarded_context context_block context_flag block_id wh_rewarded_context...
         pink_noise_player brown_noise_player identical_block_count extra_time Context_S...
@@ -414,7 +414,12 @@ function update_parameters
     reward_valve_duration=handles2give.reward_valve_duration;    % duration valve open in milliseconds
 
     if handles2give.reward_delay_flag
-        reward_delay_time=handles2give.reward_delay_time;         % delay in milisecond for delivering reward after stim (if Association=1)
+        %reward_delay_time=handles2give.reward_delay_time;
+        minDelay=2000; 
+        maxDelay=5999; 
+        reward_delay_time = floor(minDelay + (maxDelay - minDelay)*rand);
+
+        % delay in milisecond for delivering reward after stim (if Association=1)
     else
         reward_delay_time = 0;
     end
@@ -435,7 +440,7 @@ function update_parameters
     n_pool_partial = 10; 
 
     % PROBABILISTIC reward delivery for whisker
-    if partial_reward_flag && not(association_flag)
+    if partial_reward_flag 
 
         reward_proba=handles2give.reward_proba; % proportion of rewarded whisker hits
         if isempty('reward_proba_old')
@@ -450,13 +455,9 @@ function update_parameters
             reward_pool=reward_pool(randperm(numel(reward_pool))); 
         end
 
-        % Set reward flag per trial type
-        if is_whisker 
-            is_reward = double(rand(1)<reward_proba);
-        elseif is_auditory
-            is_reward=aud_reward;
-        end 
-
+        % Set reward flag regardless trial type
+        is_reward = double(rand(1)<reward_proba);
+    
     % CONSTANT reward delivery (also for association trials)
     elseif not(partial_reward_flag) || association_flag
         is_reward=1;

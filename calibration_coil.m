@@ -97,7 +97,7 @@ elseif strcmp(stim_name,'biphasic_hann_3ms')
 
     % Biphasic Hann (raised cosine) window 3 ms.
     
-    stim_amp_volt = 4.7;
+    stim_amp_volt = 5;
     stim_duration_up = 1.5;
     stim_duration_down = 1.5;
     scale_factor = 0.9;
