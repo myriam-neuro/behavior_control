@@ -416,12 +416,14 @@ function update_parameters
     if handles2give.reward_delay_flag
         %reward_delay_time=handles2give.reward_delay_time;
         minDelay=2000; 
-        maxDelay=5999; 
+        maxDelay=6000; 
         reward_delay_time = floor(minDelay + (maxDelay - minDelay)*rand);
-
+        actual_reward_delay_for_vec =0 ;
         % delay in milisecond for delivering reward after stim (if Association=1)
     else
         reward_delay_time = 0;
+        actual_reward_delay_for_vec =0 ;
+
     end
 
     
@@ -449,24 +451,27 @@ function update_parameters
 
         % Update pool of rewarded and unrewarded trials (1s and 0s) -> this
         % could be deleted
-        if all(mod(whisker_trial_counter, n_pool_partial)==1)|| all(reward_proba_old ~= reward_proba)  %check if reward_proba has changed
-            reward_proba_old = reward_proba;
-            reward_pool=[zeros(1,round((1-reward_proba)*n_pool_partial)) ones(1,round(reward_proba*n_pool_partial))]; % zero for no stim, one for Reward
-            reward_pool=reward_pool(randperm(numel(reward_pool))); 
-        end
+        %if all(mod(whisker_trial_counter, n_pool_partial)==1)|| all(reward_proba_old ~= reward_proba)  %check if reward_proba has changed
+            %reward_proba_old = reward_proba;
+            %reward_pool=[zeros(1,round((1-reward_proba)*n_pool_partial)) ones(1,round(reward_proba*n_pool_partial))]; % zero for no stim, one for Reward
+            %reward_pool=reward_pool(randperm(numel(reward_pool))); 
+        %end
 
         % Set reward flag regardless trial type
         is_reward = double(rand(1)<reward_proba);
     
     % CONSTANT reward delivery (also for association trials)
     elseif not(partial_reward_flag) || association_flag
+        disp('HSOULD NOT BE HERE')
         is_reward=1;
     end
-
-    
+    disp(trial_number)
+    disp(is_reward)
+    disp(reward_delay_time)
+    disp(iti)
     % Define reward vector
     rew_vec_amp = 5; %volt
-    reward_vec = [zeros(1,reward_delay_time) rew_vec_amp*ones(1,reward_valve_duration*Reward_S_SR/1000) zeros(1,Reward_S_SR/2)];
+    reward_vec = [zeros(1,actual_reward_delay_for_vec) rew_vec_amp*ones(1,reward_valve_duration*Reward_S_SR/1000) zeros(1,Reward_S_SR/2)];
 
     if ~is_reward 
         reward_vec=zeros(1,numel(reward_vec));
@@ -706,8 +711,14 @@ function update_parameters
         end
 
     else
+        if is_reward==1 
+            reward_title = 'Rewarded';
+        else
+            reward_title = 'Not rewarded';
+        end
+
         set(handles2give.TrialTimeLineTextTag,'String',['Next trial:   ' char(trial_titles(is_stim+1)) ' '...
-            char(association_titles(association_flag+1))  '     ' char(opto_titles(is_opto+1))], 'ForegroundColor','k');
+            char(association_titles(association_flag+1))  '     ' char(reward_title) '     ' char(opto_titles(is_opto+1))], 'ForegroundColor','k');
     end
 
     %% Parameters are updated: now send signal vectors and triggers

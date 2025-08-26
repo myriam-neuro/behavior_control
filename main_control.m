@@ -383,10 +383,31 @@ function main_control(~,event)
         
     end
 
+    %% Rewarding the stimulus trials in association mode
+    % --------------------------------------------------
+    if  association_flag && trial_started_flag && deliver_reward_flag &&...
+            toc(trial_start_time)>(light_prestim_delay +baseline_window)/1000 && toc(trial_start_time)>reward_delay_time/1000
+        
+        disp('REWARD')
+        deliver_reward_flag=0;
+        reward_delivery; %deliver reward
+        pause(0.1);   % 1 ms check
+
+        %Reset
+        trial_started_flag=0;
+        perf_and_save_results_flag=1;
+
+    elseif trial_started_flag && association_flag && ~deliver_reward_flag &&...
+            toc(trial_start_time)>(light_prestim_delay + baseline_window)/1000 && toc(trial_start_time)>reward_delay_time/1000
+        disp('NO REWARD')
+        trial_started_flag=0;
+        perf_and_save_results_flag=1;
+    end
+
     %% Update parameters for next trial
     % ---------------------------------
     if update_parameters_flag && Stim_S.IsDone &&...
-            (~reward_delivered_flag || Reward_S.ScansQueued==0) && ~handles2give.PauseRequested %<- why check reward flag?
+            (~reward_delivered_flag || Reward_S.ScansQueued==0) && ~handles2give.PauseRequested   %<- why check reward flag?
 
         update_parameters_flag=0;
 
@@ -400,25 +421,6 @@ function main_control(~,event)
 
     end
 
-    %% Rewarding the stimulus trials in association mode
-    % --------------------------------------------------
-    if  association_flag && trial_started_flag && deliver_reward_flag &&...
-            toc(trial_start_time)>(light_prestim_delay +baseline_window)/1000
-        
-        deliver_reward_flag=0;
-        outputSingleScan(Trigger_S,[0 1 0])
-        reward_delivered_flag=1;
-        outputSingleScan(Trigger_S,[0 0 0]);
 
-        %Reset
-        trial_started_flag=0;
-        perf_and_save_results_flag=1;
-
-    elseif trial_started_flag && association_flag && ~deliver_reward_flag &&...
-            toc(trial_start_time)>(light_prestim_delay + baseline_window)/1000
-
-        trial_started_flag=0;
-        perf_and_save_results_flag=1;
-    end
 
 end 
