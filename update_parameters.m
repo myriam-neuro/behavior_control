@@ -335,9 +335,6 @@ function update_parameters
                 handles2give.reward_schedule(idx) = reward_vec;
 
            end
-           disp(main_trial_pool)
-           disp(handles2give.reward_schedule)
-
         end
     end
     % --- End of trial pool creation ---

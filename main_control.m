@@ -387,8 +387,7 @@ function main_control(~,event)
     % --------------------------------------------------
     if  association_flag && trial_started_flag && deliver_reward_flag &&...
             toc(trial_start_time)>(light_prestim_delay +baseline_window)/1000 && toc(trial_start_time)>reward_delay_time/1000
-        
-        disp('REWARD')
+       
         deliver_reward_flag=0;
         reward_delivery; %deliver reward
 
@@ -398,7 +397,6 @@ function main_control(~,event)
 
     elseif trial_started_flag && association_flag && ~deliver_reward_flag &&...
             toc(trial_start_time)>(light_prestim_delay + baseline_window)/1000 && toc(trial_start_time)>reward_delay_time/1000
-        disp('NO REWARD')
         Reward_S.stop()
         Reward_S.release()
         trial_started_flag=0;
