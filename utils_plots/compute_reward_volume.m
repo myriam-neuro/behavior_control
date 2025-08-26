@@ -6,7 +6,7 @@ function [aud_tot_volume, wh_tot_volume, asso_tot_volume] = compute_reward_volum
 
 % Separate associative form non-associative trials
 asso_trials = results.association_flag==1;
-asso_stim_trials = results.is_stim(asso_trials);
+asso_stim_trials = results.is_reward(asso_trials);
 non_asso_trials = results.association_flag~=1;
 
 % Get rewards obtained per trial type

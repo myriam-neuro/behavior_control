@@ -22,7 +22,7 @@ function varargout = DetectionGUI(varargin)
 
 % Edit the above text to modify the response to help DetectionGUI
 
-% Last Modified by GUIDE v2.5 17-Aug-2025 09:49:04
+% Last Modified by GUIDE v2.5 26-Aug-2025 16:36:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -88,7 +88,7 @@ handles.behaviour_directory = 'C:\Users\mhamon\Desktop\BehaviourData';
 set(handles.BehaviorDirectoryTag,'String', handles.behaviour_directory);
 
 %% Set general session settings
-set(handles.AssociationCheckbox,'Value',0); handles.association_flag = get(handles.AssociationCheckbox,'Value');
+set(handles.AssociationCheckbox,'Value',1); handles.association_flag = get(handles.AssociationCheckbox,'Value');
 set(handles.AssociationCheckbox,'Enable','on');
 set(handles.CameraTagCheck,'Value', 0); handles.camera_flag = get(handles.CameraTagCheck,'Value');   
 set(handles.CameraTagCheck,'Enable','on');
@@ -101,14 +101,14 @@ behaviour_type = get(handles.BehaviourTypeMenu, 'String');
 handles.behaviour_type = behaviour_type{get(handles.BehaviourTypeMenu, 'Value')}; %default, as most often the most common behaviour session type
 
 %% Set the timeline parameters
-set(handles.MinQuietWindowTag,'String','2000'); handles.min_quiet_window = str2double(get(handles.MinQuietWindowTag,'String'));
-set(handles.MaxQuietWindowTag,'String','5000'); handles.max_quiet_window = str2double(get(handles.MaxQuietWindowTag,'String'));
-set(handles.ResponseWindowTag,'String','1000'); handles.response_window = str2double(get(handles.ResponseWindowTag,'String'));
+set(handles.MinQuietWindowTag,'String','1000'); handles.min_quiet_window = str2double(get(handles.MinQuietWindowTag,'String'));
+set(handles.MaxQuietWindowTag,'String','2000'); handles.max_quiet_window = str2double(get(handles.MaxQuietWindowTag,'String'));
+set(handles.ResponseWindowTag,'String','6000'); handles.response_window = str2double(get(handles.ResponseWindowTag,'String'));
 set(handles.ArtifactWindowTag,'String','100'); handles.artifact_window = str2double(get(handles.ArtifactWindowTag,'String'));
-set(handles.MinISITag,'String','6000'); handles.min_iti = str2double(get(handles.MinISITag,'String'));
-set(handles.MaxISITag,'String','10000'); handles.max_iti = str2double(get(handles.MaxISITag,'String'));
+set(handles.MinISITag,'String','2000'); handles.min_iti = str2double(get(handles.MinISITag,'String'));
+set(handles.MaxISITag,'String','5000'); handles.max_iti = str2double(get(handles.MaxISITag,'String'));
 set(handles.BaselineWindowTag,'String','0'); handles.baseline_window = str2double(get(handles.BaselineWindowTag,'String'));
-set(handles.TrialDurationTag,'String','5000'); handles.trial_duration = str2double(get(handles.TrialDurationTag,'String'));
+set(handles.TrialDurationTag,'String','6000'); handles.trial_duration = str2double(get(handles.TrialDurationTag,'String'));
 
 
 %% Set Light parameters
@@ -148,7 +148,7 @@ set(handles.ToneFreqTag,'String','10000'); handles.aud_stim_freq= str2double(get
 set(handles.ToneFreqTag,'Enable','on');
 
 set(handles.AStimWeightTag,'Enable','on')
-set(handles.AStimWeightTag,'String','10'); handles.aud_stim_weight = str2double(get(handles.AStimWeightTag,'String'));
+set(handles.AStimWeightTag,'String','0'); handles.aud_stim_weight = str2double(get(handles.AStimWeightTag,'String'));
 
 set(handles.BckgNoiseFolderPath,'String','M:\analysis\Pol_Bech\behaviour_context_files'); handles.bckg_noise_directory = get(handles.BckgNoiseFolderPath,'String');
 set(handles.BckgNoiseFolderPath,'Enable','off');
@@ -162,7 +162,7 @@ set(handles.StimDuration1Tag,'Enable','on');
 set(handles.scaling_factor,'String','0.9'); handles.wh_scaling_factor = str2double(get(handles.scaling_factor,'String'));
 set(handles.scaling_factor,'Enable','on');
 set(handles.StimAmp1Tag,'String','3.2'); handles.wh_stim_amp_1 = str2double(get(handles.StimAmp1Tag,'String'));
-set(handles.StimWeight1Tag,'String','0'); handles.wh_stim_weight_1 = str2double(get(handles.StimWeight1Tag,'String'));
+set(handles.StimWeight1Tag,'String','10'); handles.wh_stim_weight_1 = str2double(get(handles.StimWeight1Tag,'String'));
 set(handles.StimAmp1Tag,'Enable','on');
 
 %  For additional whisker stimulis of different amplitudes
@@ -196,14 +196,16 @@ set(handles.ContextTablePath,'Enable','off');
 %% Set reward parameters
 set(handles.ValveOpeningTag,'String','40'); handles.reward_valve_duration = str2double(get(handles.ValveOpeningTag,'String'));
 set(handles.ValveOpeningTag, 'Enable', 'on');
-set(handles.RewardDelayCheckbox,'Value',0); handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
+set(handles.RewardDelayCheckbox,'Value',1); handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
 set(handles.RewardDelayCheckbox,'Enable','on');
-set(handles.RewardDelayTag,'String','0'); handles.reward_delay_time = str2double(get(handles.RewardDelayTag,'String'));
-set(handles.RewardDelayTag,'Enable','off');
-set(handles.PartialRewardCheckbox,'Value',0); handles.partial_reward_flag = get(handles.PartialRewardCheckbox,'Value');
+set(handles.RewardDelayTag,'String','2000'); handles.reward_delay_time = str2double(get(handles.RewardDelayTag,'String'));
+set(handles.RewardDelayTag,'Enable','on');
+set(handles.MaxRewardDelayTag,'String','6000'); handles.max_reward_delay_time = str2double(get(handles.MaxRewardDelayTag,'String'));
+set(handles.MaxRewardDelayTag,'Enable','on');
+set(handles.PartialRewardCheckbox,'Value',1); handles.partial_reward_flag = get(handles.PartialRewardCheckbox,'Value');
 set(handles.PartialRewardCheckbox,'Enable','on');
-set(handles.RewardProbTag,'String','1'); handles.reward_proba = str2double(get(handles.RewardProbTag,'String'));
-set(handles.RewardProbTag,'Enable','off');
+set(handles.RewardProbTag,'String','0.5'); handles.reward_proba = str2double(get(handles.RewardProbTag,'String'));
+set(handles.RewardProbTag,'Enable','on');
 set(handles.AudRewTag,'Value',1); handles.aud_reward = get(handles.AudRewTag,'Value');
 set(handles.AudRewTag,'Enable','off');
 set(handles.WhRewTag,'Value',1); handles.wh_reward = get(handles.WhRewTag,'Value');
@@ -1266,8 +1268,12 @@ global handles2give
 handles.reward_delay_flag = get(handles.RewardDelayCheckbox,'Value');
 if handles.reward_delay_flag
     set(handles.RewardDelayTag,'Enable','on');
+    set(handles.MaxRewardDelayTag,'Enable','on');
+
 else
     set(handles.RewardTag,'Enable','off');
+    set(handles.MaxRewardDelayTag,'Enable','off');
+
 end
 
 % Update handles structure
@@ -2739,3 +2745,37 @@ guidata(hObject, handles)
 % Hint: get(hObject,'Value') returns toggle state of NoStim_rh_flag
 
 % Hint: get(hObject,'Value') returns toggle state of NoStimRewTag
+
+
+
+function MaxRewardDelayTag_Callback(hObject, eventdata, handles)
+% hObject    handle to MaxRewardDelayTag (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of MaxRewardDelayTag as text
+%        str2double(get(hObject,'String')) returns contents of MaxRewardDelayTag as a double
+global handles2give
+
+handles.max_reward_delay_time = round(str2double(get(handles.MaxRewardDelayTag,'String')));
+set(handles.MaxRewardDelayTag,'String',num2str(handles.max_reward_delay_time));
+
+% Update handles structure
+handles2give= handles;
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function MaxRewardDelayTag_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to MaxRewardDelayTag (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
