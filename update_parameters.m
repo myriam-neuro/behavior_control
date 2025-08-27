@@ -36,6 +36,7 @@ function update_parameters
     light_flag=handles2give.light_flag;
     
     % Context info flag
+
     context_flag = handles2give.context_flag;
     context_block_size = handles2give.context_block_size;
 
@@ -44,7 +45,6 @@ function update_parameters
     camera_duty_cycle=0.5;
     
     trial_duration=handles2give.trial_duration; % ms
-
     % Lick sensor threshold
     lick_threshold=handles2give.lick_threshold; %in volts
 
@@ -319,7 +319,7 @@ function update_parameters
         end
         if partial_reward_flag
            reward_proba = handles2give.reward_proba;   % e.g. 0.5
-           handles2give.reward_schedule = zeros(1, numel(main_trial_pool));
+           reward_schedule = zeros(1, numel(main_trial_pool));
            for t = [stim_light_list(1), stim_light_list(2), stim_light_list(3)]
                 
                 % indices for this trial type
@@ -332,7 +332,7 @@ function update_parameters
                 reward_vec = reward_vec(randperm(N_trials));
                 
                 % assign into global schedule
-                handles2give.reward_schedule(idx) = reward_vec;
+                reward_schedule(idx) = reward_vec;
 
            end
         end
@@ -467,7 +467,7 @@ function update_parameters
     % PROBABILISTIC reward delivery for whisker
     if partial_reward_flag 
         trial_idx_in_block = mod(n_completed_trials, main_pool_size) + 1;
-        is_reward = handles2give.reward_schedule(trial_idx_in_block);
+        is_reward = reward_schedule(trial_idx_in_block);
 
     
     % CONSTANT reward delivery (also for association trials)
